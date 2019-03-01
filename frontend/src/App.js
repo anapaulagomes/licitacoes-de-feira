@@ -69,7 +69,10 @@ class App extends Component {
                   </Table.Cell>
                   <Table.TextCell flexBasis={80} flexShrink={0} flexGrow={0}>
                     <a href={bid.document_url} target="_blank" rel="noopener noreferrer">
-                      <Icon icon="download" color="selected" marginRight={16} />
+                      <Icon
+                        icon={bid.document_url === "" ? "ban-circle" : "download"}
+                        color={bid.document_url === "" ? "danger" : "selected"}
+                        marginRight={16} />
                     </a>
                   </Table.TextCell>
                   <Table.Cell flexBasis={260} flexShrink={0} flexGrow={0}>
