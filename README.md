@@ -7,7 +7,7 @@ prefeitura de Feira de Santana](http://www.feiradesantana.ba.gov.br/servicos.asp
 
 Para executar o crawler que busca as licitações:
 
-`scrapy runspider crawlers.py -o data/bids.json`
+`scrapy runspider data_collection/crawlers.py -o data_collection/data/bids.json`
 
 Se quiser executar a aplicação:
 
