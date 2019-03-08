@@ -1,4 +1,4 @@
-# Licitações de Feira
+# Licitações e Contratos de Feira
 
 Uma ferramenta para facilitar o acesso as [licitações realizadas pela
 prefeitura de Feira de Santana](http://www.feiradesantana.ba.gov.br/servicos.asp?id=2&s=a&cat=PMFS&dt=01-2017&link=seadm/licitacoes.asp). 🏦
@@ -7,7 +7,7 @@ prefeitura de Feira de Santana](http://www.feiradesantana.ba.gov.br/servicos.asp
 
 Para executar o crawler que busca as licitações:
 
-`scrapy runspider data_collection/crawlers.py -o data_collection/data/bids.json`
+`scrapy runspider data_collection/bids/crawlers.py -o data_collection/data/bids/bids.json`
 
 Se quiser executar a aplicação:
 
