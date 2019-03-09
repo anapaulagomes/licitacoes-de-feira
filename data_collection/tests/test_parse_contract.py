@@ -78,6 +78,7 @@ def test_find_documents_and_names_contract_with_symbol():
     ('14.043.574]0001-51', '14043574000151'),
     ('02.921.456/0001-10', '02921456000110'),
     ('032.668.995- 80', '03266899580'),
+    ('032.668.995- 80', '03266899580'),
 ])
 def test_find_documents(document, expected_document):
     assert parse_documents(document)[0] == expected_document

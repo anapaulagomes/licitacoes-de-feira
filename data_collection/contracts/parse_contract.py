@@ -1,24 +1,24 @@
+import csv
 import os
 import re
-import requests
-import requests_cache
-from io import StringIO
-
+import rows
 
 ONE_DAY_IN_SECONDS = 86400
 CNPJ_PATTERN = re.compile(r'\d{2}\.\d{3}\.\d{3}[\/|.]\d{4}-\d{2}')
 CPF_PATTERN = re.compile(r'\d{3}\.\d{3}\.\d{3}-\d{2}')
 CNPJ_OR_CPF_PATTERN = re.compile(r'\d{2}\S+\d{3}\S+\d{3}\S+\d{4}.*?\d{2}|\d{3}\S+\d{3}\S+\d{3}.*?\d{2}')
-CONTRACT_HEADER_PATTERN = re.compile(r'do outro lado,(.*) |cláusulas e condições seguintes')
-LEGAL_REPRESENTANT_PATTERN = re.compile(r'representante .+? (.+?),')
-
-requests_cache.install_cache(cache_name='contracts/ocrspace_cache', backend='sqlite', expire_after=ONE_DAY_IN_SECONDS)
+CONTRACT_HEADER_PATTERN = re.compile(r'do outro lado,(.*) (condições seguintes|CLÁUSULA PRIMEIRA)')
+LEGAL_REPRESENTANT_PATTERN = re.compile(r'(representante.+?|representada por.+?) (.+?),')
 
 
 def clean_document(string):
     string = re.sub(r'[^\w]', ' ', string)
     string = string.replace(' ', '')
-    return string.lstrip().rstrip()
+    string = string.lstrip().rstrip()
+    if len(string) == 15 and '10001' in string:
+        # a few cnpjs are replacing / by 1 during PDF parser process
+        return string.replace('10001', '0001')
+    return string
 
 def clean_string(string):
     words = string.split(' ')
@@ -44,8 +44,8 @@ def parse_legal_representant(header):
             header = header.replace(salutation, '')
     legal_representant = re.findall(LEGAL_REPRESENTANT_PATTERN, header)
     if legal_representant != []:
-        return clean_string(legal_representant[0])
-    return ''
+        return clean_string(legal_representant[0][1])
+    return None
 
 
 def parse_documents(header):
@@ -61,7 +61,7 @@ def parse_documents(header):
 def find_documents_and_names(sample):
     header = re.findall(CONTRACT_HEADER_PATTERN, sample)
     if header:
-        header = header[0]
+        header = header[0][0]
         name = parse_name(header)
 
         index_name = header.find(name)
@@ -87,56 +87,69 @@ def find_documents_and_names(sample):
     return {}
 
 
-def retrieve_content_from_pdf(pdf_url):
-    """
-    API: https://ocr.space/ocrapi
-    """
-    payload = {
-        'url': pdf_url,
-        'isOverlayRequired': True,
-        'apikey': os.getenv('OCR_SPACE_API'),
-        'language': 'por',
+def extract_content(file_content):
+    pages = rows.plugins.pdf.pdf_to_text(file_content)
+    parsed_contract = ''.join(pages).replace('\r', '').replace('\n', '')
+    result = {
+        'error': None,
+        'result': {}
     }
-    response = requests.post('https://api.ocr.space/parse/image', data=payload)
-    return response.json()
-
-
-def parse_contract(response):
-    parsed_contract = ''
-
-    try:
-        if response.get('ParsedResults'):
-            for info in response['ParsedResults']:
-                parsed_contract += info['ParsedText']
-        parsed_contract = parsed_contract.replace('\r', '').replace('\n', '')
-    except AttributeError as e:
-        print('Something went wrong: ', e)
-    return parsed_contract
-
-
-def parse_contracts(urls):
-    for url in urls:
-        if '.pdf' in url:
-            response = retrieve_content_from_pdf(url)
-            parsed_contract = parse_contract(response)
-            # print(parsed_contract)
-            filename = url[url.rfind('/')+1:]
-            print(filename, find_documents_and_names(parsed_contract))
+    if parsed_contract != '':
+        result['result'] = find_documents_and_names(parsed_contract)
+    else:
+        result['error'] = 'This PDF is probably an image'
+    return result
 
 
 if __name__ == '__main__':
-    urls = open('data/contracts/contracts-url-feira-de-santana-2016-2017.csv').readlines()
-    # urls = [
-    #     'http://www.transparencia.feiradesantana.ba.gov.br/contratos/06092017134504000000.pdf',
-    #     'http://www.transparencia.feiradesantana.ba.gov.br/contratos/06092017134448000000.pdf',
-    #     'http://www.transparencia.feiradesantana.ba.gov.br/contratos/06092017134430000000.pdf',
-    #     'http://www.transparencia.feiradesantana.ba.gov.br/contratos/06092017134411000000.pdf',
-    #     'http://www.transparencia.feiradesantana.ba.gov.br/contratos/06092017134351000000.pdf',
-    #     'http://www.transparencia.feiradesantana.ba.gov.br/contratos/06092017134333000000.pdf',
-    #     'http://www.transparencia.feiradesantana.ba.gov.br/contratos/06092017134248000000.pdf',
-    #     'http://www.transparencia.feiradesantana.ba.gov.br/contratos/06092017134224000000.pdf',
-    #     'http://www.transparencia.feiradesantana.ba.gov.br/contratos/06092017134207000000.pdf',
-    #     'http://www.transparencia.feiradesantana.ba.gov.br/contratos/06092017134147000000.pdf'
+    pds_directory = 'data/contracts/pdfs/'
 
-    # ]
-    parse_contracts(urls)
+    not_found = 0
+    image = 0
+    error = 0
+    key_not_found = {
+        'name': 0,
+        'document': 0,
+        'legal_representant': 0,
+        'legal_representant_document': 0,
+    }
+    invalid_document = {
+        'document': 0,
+        'legal_representant_document': 0,
+    }
+
+    pdfs = os.listdir(pds_directory)
+    results = []
+    for pdf in pdfs:
+        if '.pdf' in pdf:
+            result = extract_content(open(pds_directory + pdf))
+            result['pdf'] = pdf
+
+            if result['result'] == {}:
+                if result['error'] == 'This PDF is probably an image':
+                    image += 1
+                else:
+                    not_found += 1
+                    print(pds_directory + pdf)
+                continue
+            elif result['error'] is None:
+                results.append(result['result'])
+
+            for key, value in result['result'].items():
+                if value == '' or value is None:
+                    key_not_found[key] = key_not_found[key] + 1
+                elif key == 'document' or key == 'legal_representant_document':
+                    if len(value) != 11 and len(value) != 14:
+                        invalid_document[key] = invalid_document[key] + 1
+
+    with open('data/contracts/documents-from-contracts.csv', 'w', encoding='utf8', newline='') as output_file:
+        dict_writer = csv.DictWriter(output_file, fieldnames=results[0].keys())
+        dict_writer.writeheader()
+        dict_writer.writerows(results)
+
+    total = len(pdfs)
+    print('------------------------------------------')
+    print(f'Total: {total} [Image: {image} ({image*100//total}%) Not found: {not_found} ({not_found*100//total}%) Error: {error} ({error*100//total}%)]')
+    print('------------------------------------------')
+    print(f'Key not found: {key_not_found}')
+    print(f'Invalid document: {invalid_document}')

@@ -45,10 +45,20 @@ Fonte:
 Coincidência ou não, boa parte dos contratos está preenchida com CNPJ/CPF errados.
 Nesses contratos, foram encontrados 401 documentos únicos. 275 não encontrados.
 Dos não encontrados, alguns tinham apenas o último dígito modificado.
-Para encontrar os documentos, parseei o documento de assinatura do contrato.
+Para encontrar os documentos, duas estratégias:
+
+1. Calcular o dígito verificador
+2. Extrair documentos dos contratos
 
 ## Comandos
 
 ### Baixando todos os PDFs do CSV de URLs
 
 `wget -i data_collection/data/contracts/contracts-url-feira-de-santana-2016-2017.csv -P data_collection/data/contracts/pdfs/`
+
+### Extraindo documentos dos contratos (PDFs)
+
+```
+cd data_collection/
+python contracts/parse_contract.py
+```
