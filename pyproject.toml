@@ -8,10 +8,10 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.7"
 scrapy = "^1.6"
-pandas = "^0.24.1"
 requests = "^2.21"
 requests-cache = "^0.4.13"
 pytest = "^4.3"
+rows = "^0.4.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.3"
