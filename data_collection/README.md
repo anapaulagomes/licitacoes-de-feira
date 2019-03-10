@@ -33,22 +33,34 @@ Fonte:
 
 ### [Contratos](https://github.com/anapaulagomes/licitacoes-de-feira/tree/master/data_collection/data/contracts)
 
-[contratos-prefeitura-2016-2017.xls](http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=contratos)
+Exemplo:
+
+```
+{
+	"code": "651-2016-14C",
+	"description": "AQUISI\u00c7\u00c3O DE MATERIAL DE CONSUMO PARA CASA DO TRABALHADOR CONV\u00caNIO 778827/2012 CONFORME OR\u00c7AMENTO EM ANEXO. PARA ENTREGA IMEDIATA EM AT\u00c9  05 DIAS LOCAL RUA CASTRO ALVES 894, CENTRO FEIRA DE SANTANA.O OR\u00c7AMENTO B\u00c1SICO FOI BASEADO PELA M\u00c9DIA DOS PRE",
+	"start_date": "25/11/2016",
+	"end_date": "25/11/2017",
+	"cost": 7389.92,
+	"contractor": {
+		"name": "LIMP-AKY DISTRIBUIDORA LTDA - EPP",
+		"document": "04702241000133",
+		"document_type": "CNPJ",
+		"sources": ["website-contracts", "parsed-contracts"],
+		"data_from_pdf": {
+			"documents": ["4702241000133"],
+			"legal_representants": [{
+				"name": "ANDERSON NOGUEIRA DUARTE",
+				"document": "10440760623"
+			}]
+		}
+	}
+}
+```
 
 Fonte:
-- http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=contratos
-
-[contracts-url-feira-de-santana-2016-2017.csv](https://github.com/anapaulagomes/licitacoes-de-feira/blob/master/data_collection/data/contracts/contracts-url-feira-de-santana-2016-2017.csv) (Obrigada, Turicas!)
-
-### Sócios das Empresas Brasileiras
-
-Coincidência ou não, boa parte dos contratos está preenchida com CNPJ/CPF errados.
-Nesses contratos, foram encontrados 401 documentos únicos. 275 não encontrados.
-Dos não encontrados, alguns tinham apenas o último dígito modificado.
-Para encontrar os documentos, duas estratégias:
-
-1. Calcular o dígito verificador
-2. Extrair documentos dos contratos
+- [contratos-prefeitura-2016-2017.xls](http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=contratos)
+- [contracts-url-feira-de-santana-2016-2017.csv](https://github.com/anapaulagomes/licitacoes-de-feira/blob/master/data_collection/data/contracts/contracts-url-feira-de-santana-2016-2017.csv) (Obrigada, Turicas!)
 
 ## Comandos
 
@@ -62,3 +74,23 @@ Para encontrar os documentos, duas estratégias:
 cd data_collection/
 python contracts/parse_contract.py
 ```
+
+Resultado: `data_collection/data/contracts/documents-from-contracts.csv`
+
+### Consolidando os dados dos contratos
+
+Coincidência ou não, boa parte dos contratos está preenchida com CNPJ/CPF errados.
+Nesses contratos, foram encontrados 401 documentos únicos, sendo 216 inválidos
+(e.g. dígitos verificadores diferentes, _leading zeros_ cortados pelo XLS).
+Para encontrar os documentos corretos, foram utilizadas duas estratégias:
+
+1. Calcular os dígitos verificadores
+2. Extrair documentos dos contratos
+3. Adicionar os zeros faltantes
+
+```
+cd data_collection/
+python consolidate_contracts_info.py
+```
+
+Resultado: `data_collection/data/contracts/contracts.json`
