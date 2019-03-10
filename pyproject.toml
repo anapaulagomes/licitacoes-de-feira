@@ -3,7 +3,7 @@ name = "biddings"
 version = "0.1.0"
 description = "Make biddings from Feira de Santana (Brazil) accessible to everyone."
 authors = ["Ana Paula Gomes <apgomes88@gmail.com>"]
-license = "MIT"
+license = "GNU GPL"
 
 [tool.poetry.dependencies]
 python = "^3.7"
