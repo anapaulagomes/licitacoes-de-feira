@@ -5,6 +5,46 @@ import pandas as pd
 DATA_DIRECTORY = "../data/payments/"
 sheets = os.listdir(DATA_DIRECTORY)
 
+values_key = {
+    "PREGAO": "PREGAO",
+    "DISPENSA": "DISPENSA",
+    "TOMADA DE PRECO": "TOMADA DE PRECO",
+    "INEXIGIBILIDADE": "INEXIGIBILIDADE",
+    "ISENTO": "ISENTO",
+    "CONVITE": "CONVITE",
+    "CONVENIO": "CONVENIO",
+    "CONCORRENCIA": "CONCORRENCIA",
+    "CONCURSO": "CONCURSO",
+    "ONCORRENCIA": "CONCORRENCIA",
+    "ISPENSA": "DISPENSA",
+    "REGAO": "PREGAO",
+    "NEXIGIBILIDADE": "INEXIGIBILIDADE",
+    "SENTO": "ISENTO",
+    "EGAO": "PREGAO",
+    "EXIGIBILIDADE": "INEXIGIBILIDADE",
+    "OMADA DE PRECO": "TOMADA DE PRECO",
+    "SPENSA": "DISPENSA",
+    "PENSA": "DISPENSA",
+    "ENTO": "ISENTO",
+    "NCORRENCIA": "CONCORRENCIA",
+}
+
+
+def normalize_modality(value):
+    if values_key.get(value.upper()):
+        return values_key.get(value.upper())
+    return value.upper()
+
+
+def normalize_cost(value):
+    # 69.848,70
+    try:
+        return float(value.replace(".", "").replace(",", "."))
+    except ValueError as e:
+        print(f"Something went wrong: {value}", e)
+    return None
+
+
 all_payments = pd.DataFrame()
 for sheet in sheets:
     try:
@@ -38,6 +78,18 @@ all_payments = all_payments.rename(index=str, columns=columns)
 to_be_striped = list(columns.values())
 to_be_striped.remove("data_de_publicacao")
 to_be_striped.remove("fase")
-all_payments = all_payments[to_be_striped].applymap(lambda value: str(value).strip())
+all_payments[to_be_striped] = all_payments[to_be_striped].applymap(
+    lambda value: str(value).strip()
+)
+
+all_payments["modalidade"] = all_payments["modalidade"].apply(
+    lambda value: normalize_modality(value)
+)
+
+all_payments["data_de_publicacao"] = pd.to_datetime(
+    all_payments["data_de_publicacao"], format="%d/%m/%Y", errors="coerce"
+)
+
+all_payments["valor"] = all_payments["valor"].apply(lambda value: normalize_cost(value))
 
 all_payments.to_csv(path_or_buf=f"{DATA_DIRECTORY}all_payments.csv", index=False)
