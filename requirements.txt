@@ -1,0 +1,6 @@
+pandas==0.24.2
+scrapy==1.6
+requests==2.21
+requests-cache==0.4.13
+rows==0.4.1
+xlrd==1.2.0
