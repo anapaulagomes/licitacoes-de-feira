@@ -1,7 +1,7 @@
 import json
 import rows
 import time
-from utils import make_document_valid
+from data_colltion.utils import make_document_valid
 
 
 def consolidate_entities(raw_docs_from_contract):

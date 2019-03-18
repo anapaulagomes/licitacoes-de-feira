@@ -58,6 +58,15 @@ Exemplo:
 }
 ```
 
+### Pagamentos
+
+```
+```
+
+### Funções e subfunções
+
+Fonte: http://www.tesouro.fazenda.gov.br/documents/10180/456785/Classifica%C3%A7%C3%A3o+Funcional.pdf/aa2723e7-850f-4098-9c4c-4e194f0f914c
+
 Fonte:
 - [contratos-prefeitura-2016-2017.xls](http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=contratos)
 - [contracts-url-feira-de-santana-2016-2017.csv](https://github.com/anapaulagomes/licitacoes-de-feira/blob/master/data_collection/data/contracts/contracts-url-feira-de-santana-2016-2017.csv) (Obrigada, Turicas!)
@@ -94,3 +103,10 @@ python consolidate_contracts_info.py
 ```
 
 Resultado: `data_collection/data/contracts/contracts.json`
+
+
+### CSV para SQLite
+
+```
+rows csv2sqlite data/payments/all_payments.csv payments.sqlite
+```

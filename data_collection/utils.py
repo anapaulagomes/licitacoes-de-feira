@@ -49,12 +49,24 @@ def make_cpf_valid(document):
     return _make_document_valid(document, limit, first_weigth, second_weigth)
 
 
-def make_document_valid(document):
-    document = fix_leading_zeros(document)
+def make_document_valid(value):
+    if value is None:
+        return value
+    document = fix_leading_zeros(value)
+
     if len(document) == 11:
         return make_cpf_valid(document)
     elif len(document) == 14:
         return make_cnpj_valid(document)
+    return document
+
+
+def add_mask_to_document(document):
+    if len(document) == 11:
+        return f"{document[0:3]}.{document[3:6]}.{document[6:9]}-{document[-2:]}"
+    elif len(document) == 14:
+        # 13.481.460/0001-20
+        return f"{document[0:2]}.{document[2:5]}.{document[5:8]}/{document[8:12]}-{document[-2:]}"
     return document
 
 
@@ -68,3 +80,45 @@ def fix_leading_zeros(document):
         return "0" * (cnpj_len - doc_len) + document
     if doc_len < cpf_len:
         return "0" * (cpf_len - doc_len) + document
+
+
+def functions_and_subfunctions_to_json(content):
+    """
+    Content copied from:
+    http://www.tesouro.fazenda.gov.br/documents/10180/456785/Classifica%C3%A7%C3%A3o+Funcional.pdf/aa2723e7-850f-4098-9c4c-4e194f0f914c
+    
+    Format:
+    01 - Legislativa
+    031 - Ação Legislativa
+    032 - Controle Externo
+    02 - Judiciária
+
+    To:
+    expected: {
+        1: {"label": "Legislativa", "function": None},
+        31: {"label": "Ação Legislativa", "function": 1},
+        32: {"label": "Ação Legislativa", "function": 1},
+        2: {"label": "Judiciária", "function": None},
+    }
+    """
+    divider = " - "
+    functions_and_sub_functions = {}
+    previous_function = None
+    for line in content.splitlines():
+        splited_line = line.strip().split(divider)
+        code = str(splited_line[0])
+        label = None
+        if len(splited_line) == 2:
+            label = splited_line[1]
+
+        if len(code) > 2:
+            code = int(code)
+            functions_and_sub_functions[code] = {
+                "label": label,
+                "function": previous_function,
+            }
+        else:
+            code = int(code)
+            functions_and_sub_functions[code] = {"label": label, "function": None}
+            previous_function = code
+    return functions_and_sub_functions
