@@ -28,3 +28,5 @@ yarn-error.log*
 # cache files
 data_collection/contracts/brasilws_cache.sqlite
 data_collection/contracts/brasilio_cache.sqlite
+
+*egg-info
