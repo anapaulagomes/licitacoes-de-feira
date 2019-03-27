@@ -25,7 +25,7 @@ class App extends Component {
     super(props)
 
     this.state = {
-      bids: allBids,
+      bids: allBids.sort((a, b) => (a.month > b.month) ? 1 : -1).sort((a, b) => (a.year < b.year) ? 1 : -1),
     }
   }
 
@@ -109,7 +109,7 @@ class App extends Component {
         height="auto"
       >
         <Table.Cell width={80} flex="none">
-          <Paragraph>{bid.month_year}</Paragraph>
+          <Paragraph>{bid.month}/{bid.year}</Paragraph>
         </Table.Cell>
         <Table.Cell>
           <Pane marginTop={10} marginBottom={10}>
