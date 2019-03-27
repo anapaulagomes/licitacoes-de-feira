@@ -8,15 +8,14 @@ class AllBidsSpider(scrapy.Spider):
     bid_id = 0
 
     def parse(self, response):
-        all_bidding_urls = response.xpath("//table/tbody/tr/td/div/a//@href").extract()
-        base_url = "http://www.feiradesantana.ba.gov.br/seadm/"
-
-        url_pattern = re.compile(r"licitacoes_pm\.asp\?cat=\w+\&dt=\d+-\d+")
+        all_bidding_urls = response.xpath("//table/tbody/tr/td[1]/div/a//@href").extract()
+        base_url = "http://www.feiradesantana.ba.gov.br"
 
         for url in all_bidding_urls:
-            match = url_pattern.search(url)
-            if match:
-                yield response.follow(f"{base_url}{match.group()}", self.parse_page)
+            if base_url not in url:
+                # all years except 2017 and 2018
+                url = f"{base_url}/seadm/{url}"
+            yield response.follow(url, self.parse_page)
 
     def parse_page(self, response):
         raw_modalities = response.xpath("//tr/td[1]/table/tr/td/text()").extract()
@@ -35,14 +34,16 @@ class AllBidsSpider(scrapy.Spider):
         for modality, (description, document_url), bid_history, when in zip(
             modalities, descriptions, bids_history, when
         ):
-            url_pattern = re.compile(r"licitacoes_pm\.asp\?cat=(\w+)\&dt=(\d+-\d+)")
+            url_pattern = re.compile(r"licitacoes_pm\.asp[\?|&]cat=(\w+)\&dt=(\d+-\d+)")
             match = url_pattern.search(response._url)
+            month, year = match.group(2).split('-')
 
             yield {
                 "id": self.bid_id,
                 "url": response._url,
-                "category": match.group(1),
-                "month_year": match.group(2),
+                "category": match.group(1).upper(),
+                "month": int(month),
+                "year": int(year),
                 "description": description,
                 "history": bid_history,
                 "modality": modality,

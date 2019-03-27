@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Badge, Icon, Link, Heading, Pane, Paragraph, Strong, Table, Text } from 'evergreen-ui';
 
-import allBids from './bids.v1.json'; // eslint-disable-line import/extensions
+import allBids from './bids.v2.json'; // eslint-disable-line import/extensions
 
 
 const categoryColors = {
@@ -9,7 +9,7 @@ const categoryColors = {
     "label": "Fundação Hospitalar de Feira de Santana",
     "color": "orange"
   },
-  "sms": {
+  "SMS": {
     "label": "Secretaria de Saúde",
     "color": "purple"
   },
