@@ -30,6 +30,12 @@ Para executar o crawler que busca as licitações:
 scrapy runspider data_collection/bids/crawlers.py -o data_collection/data/bids/bids.json
 ```
 
+### Contratos
+
+```bash
+scrapy runspider data_collection/contracts/list_contracts.py -o data_collection/data/contracts/contracts-pdfs.csv
+```
+
 ### FrontEnd
 
 Se quiser executar a aplicação:
