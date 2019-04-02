@@ -153,6 +153,8 @@ class App extends Component {
       >
         <Heading is="h3" padding={50}>
           Código e dados abertos <a href="https://github.com/anapaulagomes/licitacoes-de-feira" target="_blank" rel="noopener noreferrer">aqui</a>. :)
+      
+          Quer ajudar? Envie um email para: dadosabertosdefeira@gmail.com
         </Heading>
       </Pane>
     )
