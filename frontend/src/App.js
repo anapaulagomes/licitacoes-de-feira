@@ -151,9 +151,9 @@ class App extends Component {
         alignItems="center"
         justifyContent="center"
       >
-        <Heading is="h3" padding={50}>
+        <Heading is="h5" padding={10}>
           Código e dados abertos <a href="https://github.com/anapaulagomes/licitacoes-de-feira" target="_blank" rel="noopener noreferrer">aqui</a>. :)
-      
+
           Quer ajudar? Envie um email para: dadosabertosdefeira@gmail.com
         </Heading>
       </Pane>
@@ -164,7 +164,7 @@ class App extends Component {
     return (
       <Fragment>
         {this.introduction()}
-        <Pane border height="60vh" display="flex" flexGrow={0}>
+        <Pane border height="70vh" display="flex" flexGrow={0}>
           {this.bidTable()}
         </Pane>
         {this.footer()}
