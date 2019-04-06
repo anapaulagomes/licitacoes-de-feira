@@ -42,5 +42,6 @@ Se quiser executar a aplicação:
 
 ```
 cd frontend/
+npm install
 npm start
 ```
