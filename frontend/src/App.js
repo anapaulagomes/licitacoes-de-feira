@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Badge, Icon, Link, Pane, Paragraph, Strong, Table, Text } from 'evergreen-ui';
+import { Pane } from 'evergreen-ui';
 
 import Introduction from './Components/Introduction';
 import Footer from './Components/Footer';
