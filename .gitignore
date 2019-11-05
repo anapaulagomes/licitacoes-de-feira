@@ -31,4 +31,4 @@ data_collection/contracts/brasilio_cache.sqlite
 
 *egg-info
 
-data/
+data_collection/data/
