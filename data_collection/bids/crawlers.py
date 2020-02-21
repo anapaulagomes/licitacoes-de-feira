@@ -14,7 +14,10 @@ class AllBidsSpider(scrapy.Spider):
         for url in all_bidding_urls:
             if base_url not in url:
                 # all years except 2017 and 2018
-                url = f"{base_url}/seadm/{url}"
+                if url.startswith("servicos.asp"):
+                    url = response.urljoin(f"{base_url}/{url}")
+                else:
+                    url = response.urljoin(f"{base_url}/seadm/{url}")
             yield response.follow(url, self.parse_page)
 
     def parse_page(self, response):
