@@ -32,3 +32,6 @@ data_collection/contracts/brasilio_cache.sqlite
 *egg-info
 
 data_collection/data/
+
+# python
+venv/
