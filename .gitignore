@@ -1,6 +1,7 @@
 __pycache__/
 .DS_Store
 .firebase
+.vscode
 
 # dependencies
 /node_modules

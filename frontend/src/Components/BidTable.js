@@ -1,6 +1,6 @@
 import React from 'react';
 import { Badge, Icon, Link, Pane, Paragraph, Strong, Table, Text } from 'evergreen-ui';
-import allBids from '../bids.v6.json'; // eslint-disable-line import/extensions
+import allBids from '../bids.v7.json'; // eslint-disable-line import/extensions
 
 const categoryColors = {
     "FHFS": {
